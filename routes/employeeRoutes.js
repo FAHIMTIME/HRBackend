@@ -1,131 +1,57 @@
-const express = require('express')
+const express = require('express');
 const router = express.Router();
-const Employee = require('../models/employee')
-const leaves = require('../models/leaves');
+const Employee = require('../models/employee');
 
-// ----------------------- EMPLOYEE ROUTES ----------------------- 
+// Get all employees
+router.get('/', async (req, res) => {
+  try {
+    const employees = await Employee.find({ isdeleted: false });
+    res.json({ success: true, data: employees, msg: "Data Received" });
+  } catch (err) {
+    res.status(500).json({ success: false, data: [], msg: "Error while reading employees" });
+  }
+});
 
-//Read all employee
-router.get('/', async (req,res)=>{
-    try{
-        const employee = await Employee.find({isdeleted: false})
-        const response = {success: true, data: employee, msg: "Data Received"}
-        res.json(response)
-    }
-    catch(err){
-        const response = {success: false, data: [],msg: "Error while reading"}
-        res.status(500).json(response)
-    }
-})
+// Get single employee by ID
+router.get('/:id', async (req, res) => {
+  try {
+    const employee = await Employee.findById(req.params.id);
+    if (!employee || employee.isdeleted) return res.status(404).json({ success: false, msg: "Employee Not Found" });
+    res.json({ success: true, data: employee });
+  } catch (err) {
+    res.status(500).json({ success: false, data: [], msg: "Error while reading single employee" });
+  }
+});
 
+// Add new employee
+router.post('/', async (req, res) => {
+  try {
+    const newEmp = new Employee(req.body);
+    await newEmp.save();
+    res.status(200).json({ success: true, msg: "New employee saved" });
+  } catch (err) {
+    res.status(500).json({ success: false, msg: "Error while adding new employee" });
+  }
+});
 
-//Read single employee
-router.get('/:id', async (req,res)=>{
-    try{
-        const employee = await Employee.find(req.params.id)
-        if(!employee || employee.isdeleted) return res.status(404).json({success: false, msg: "Employee Not Found"})
-        res.json({sucess: true, data: employee})
-    }
-    catch(err){
-        const response = {success: false, data: [],msg: "Error while reading single employee"}
-        res.status(500).json(response)
-    }
-})
+// Soft delete employee
+router.delete('/:id', async (req, res) => {
+  try {
+    await Employee.findByIdAndUpdate(req.params.id, { isdeleted: true });
+    res.status(200).json({ success: true, msg: "Employee deleted" });
+  } catch (err) {
+    res.status(500).json({ success: false, msg: "Error while deleting employee" });
+  }
+});
 
-//Add new EMployee
-router.post('/', async (req,res)=>{
-    try{
-        const newEmp = new Employee(req.body);
-        const saveEmp = await newEmp.save();
-         res.status(200).json({success: true,  msg: "new employee saved"})
-    }
-    catch(err){
-        res.status(500).json({success: false,  msg: "Error while adding new employee"})
-    }
-})
+// Update employee
+router.put('/:id', async (req, res) => {
+  try {
+    await Employee.findByIdAndUpdate(req.params.id, req.body);
+    res.status(200).json({ success: true, msg: "Employee updated" });
+  } catch (err) {
+    res.status(500).json({ success: false, msg: "Error while updating employee" });
+  }
+});
 
-router.delete('/:id', async(req, res)=>{
-    try{
-        const deleteEmp = await Employee.findOneAndUpdate(req.params.id, {isdeleted: true})
-         res.status(200).json({success: true,  msg: "employee Deleted"})
-    }
-    catch(err){
-        res.status(500).json({success: false,  msg: "Error while deleting employee"})
-    }
-})
-
-router.put('/:id', async(req, res)=>{
-    try{
-        const deleteEmp = await Employee.findOneAndUpdate(req.params.id, req.body)
-         res.status(200).json({success: true,  msg: "employee Deleted"})
-    }
-    catch(err){
-        res.status(500).json({success: false,  msg: "Error while deleting employee"})
-    }
-})
-
-
-// ----------------------- LEAVE ROUTES ----------------------- 
-
-//Read all Leaves
-router.get('/', async (req,res)=>{
-    try{
-        const leaves = await leaves.find({isdeleted: false})
-        const response = {success: true, data: leaves, msg: "Data Received"}
-        res.json(response)
-    }
-    catch(err){
-        const response = {success: false, data: [],msg: "Error while reading"}
-        res.status(500).json(response)
-    }
-})
-
-
-//Read single Leave
-router.get('/:id', async (req,res)=>{
-    try{
-        const Leave = await leaves.find(req.params.id)
-        if(!leaves || leaves.isdeleted) return res.status(404).json({success: false, msg: "Leave Not Found"})
-        res.json({sucess: true, data: leaves})
-    }
-    catch(err){
-        const response = {success: false, data: [],msg: "Error while reading single Leave"}
-        res.status(500).json(response)
-    }
-})
-
-//Add new Leave
-router.post('/', async (req,res)=>{
-    try{
-        const newLeave = new leaves(req.body);
-        const saveLeave = await newLeave.save();
-         res.status(200).json({success: true,  msg: "new Leave saved"})
-    }
-    catch(err){
-        res.status(500).json({success: false,  msg: "Error while adding new Leave"})
-    }
-})
-
-router.delete('/:id', async(req, res)=>{
-    try{
-        const delLeave = await leaves.findOneAndUpdate(req.params.id, {isdeleted: true})
-         res.status(200).json({success: true,  msg: "Leave Deleted"})
-    }
-    catch(err){
-        res.status(500).json({success: false,  msg: "Error while deleting Leave"})
-    }
-})
-
-router.put('/:id', async(req, res)=>{
-    try{
-        const deleave = await Employee.findOneAndUpdate(req.params.id, req.body)
-         res.status(200).json({success: true,  msg: "Leave Deleted"})
-    }
-    catch(err){
-        res.status(500).json({success: false,  msg: "Error while deleting Leave"})
-    }
-})
-
-
-
-module.exports = router
+module.exports = router;

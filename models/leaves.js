@@ -1,5 +1,5 @@
 const mongo = require('mongoose');
-const employee = require('./employee');
+//const Employee = require('./employee');
 
 const leaves = new mongo.Schema({
     empnumber: String,
@@ -13,4 +13,4 @@ const leaves = new mongo.Schema({
     isdeleted: {type: Boolean, default: false}
 }); 
 
-module.exports = mongo.model('leaves', leaves)
+module.exports = mongo.model('Leaves', leaves)
