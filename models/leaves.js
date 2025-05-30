@@ -4,8 +4,8 @@ const mongo = require('mongoose');
 const leaves = new mongo.Schema({
     empnumber: String,
     leaveType: String,
-    dateFrom: String,
-    dateTo: String,
+    dateFrom: Date,
+    dateTo: Date,
     reason: String,
     Approved: {type:Boolean,default:false},
     employee: { type: mongo.Schema.Types.ObjectId, ref: 'Employee' },

@@ -7,8 +7,8 @@ const LeaveRoute = require('./routes/leaveRoutes')
 const app = new express();
 app.use(express.json())
 
-app.use('/employee', EmployeeRoute);
-app.use('/leave', LeaveRoute);
+app.use('/employees', EmployeeRoute);
+app.use('/leaves', LeaveRoute);
 
 mongo.connect(process.env.MONGO_URI).then(()=>{
     console.log('Mongo DB Connected')
