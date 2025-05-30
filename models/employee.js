@@ -3,12 +3,12 @@ const mongo = require('mongoose')
 const employee = new mongo.Schema({
     empnumber: String,
     name: String,
-    dob: date,
+    dob: Date,
     dept: String,
-    doj: date,
+    doj: Date,
     email: String,
     phone: String,
-    dot: date,
+    dot: Date,
     etype: String,
     isactive: {type: Boolean, default: true},
     isdeleted: {type: Boolean, default: false}
